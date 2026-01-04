@@ -105,6 +105,11 @@ journalctl -u ucheba-bot -f
 Если нужен запуск одной командой (curl | bash), опубликуйте архив проекта и скрипт
 `scripts/install_from_pages.sh` на GitHub Pages. Полная инструкция: `docs/INSTALL_GITHUB_PAGES.md`.
 
+## Мини‑сайт установки
+
+Готовая HTML‑страница с пошаговой установкой и пояснениями расположения данных находится в
+`docs/install-site/index.html`. Её можно публиковать на GitHub Pages или любом статическом хостинге.
+
 ### Celery
 
 ```bash

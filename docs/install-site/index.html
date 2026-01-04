@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Ucheba — установка на сервер</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 0; background: #f6f8fb; color: #1a1a1a; }
+    header { background: #2f4b7c; color: #fff; padding: 32px 16px; }
+    header h1 { margin: 0 0 8px; }
+    main { max-width: 960px; margin: 0 auto; padding: 24px 16px; }
+    section { background: #fff; border-radius: 12px; padding: 16px 20px; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); }
+    code, pre { background: #0f172a; color: #e2e8f0; padding: 12px; border-radius: 8px; display: block; overflow-x: auto; }
+    .grid { display: grid; gap: 16px; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); }
+    .pill { display: inline-block; background: #e2e8f0; padding: 4px 8px; border-radius: 999px; font-size: 12px; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Ucheba — мини‑сайт установки</h1>
+    <p>Пошаговая установка проекта на Ubuntu VDS и объяснение, где находятся сервисы и данные.</p>
+  </header>
+  <main>
+    <section>
+      <h2>1. Подготовка сервера</h2>
+      <pre>sudo -i
+apt-get update
+apt-get install -y git curl</pre>
+    </section>
+    <section>
+      <h2>2. Переменные установки</h2>
+      <p>Задайте параметры перед запуском установщика.</p>
+      <pre>export PROJECT_DIR=/opt/ucheba
+export REPO_URL=https://example.com/your-repo.git
+export DOMAIN=example.com
+export DJANGO_SECRET_KEY=change-me
+export DATABASE_URL=postgres://ucheba:ucheba@localhost:5432/ucheba
+export REDIS_URL=redis://localhost:6379/0
+export API_URL=http://127.0.0.1:8000/api
+export BOT_TOKEN=your-telegram-token
+export CREATE_DB=1
+export POSTGRES_USER=ucheba
+export POSTGRES_PASSWORD=ucheba
+export POSTGRES_DB=ucheba</pre>
+    </section>
+    <section>
+      <h2>3. Запуск установки</h2>
+      <pre>cd /opt
+rm -rf /opt/ucheba
+
+git clone "$REPO_URL" "$PROJECT_DIR"
+cd "$PROJECT_DIR"
+
+bash scripts/install_vds.sh</pre>
+    </section>
+    <section>
+      <h2>4. Где находятся данные</h2>
+      <div class="grid">
+        <div>
+          <span class="pill">PostgreSQL</span>
+          <p>Данные БД по умолчанию: <code>/var/lib/postgresql/14/main</code> (может отличаться по версии).</p>
+        </div>
+        <div>
+          <span class="pill">Redis</span>
+          <p>База Redis: <code>/var/lib/redis</code>, конфиг: <code>/etc/redis/redis.conf</code>.</p>
+        </div>
+        <div>
+          <span class="pill">Проект</span>
+          <p>Код проекта: <code>/opt/ucheba</code>, статика: <code>/opt/ucheba/backend/staticfiles</code>, медиа: <code>/opt/ucheba/backend/media</code>.</p>
+        </div>
+        <div>
+          <span class="pill">Логи</span>
+          <p>Системные логи сервисов: <code>journalctl -u ucheba-gunicorn</code>.</p>
+        </div>
+      </div>
+    </section>
+    <section>
+      <h2>5. Проверка сервисов</h2>
+      <pre>systemctl status ucheba-gunicorn
+systemctl status ucheba-celery
+systemctl status ucheba-bot</pre>
+    </section>
+    <section>
+      <h2>6. SSL (по желанию)</h2>
+      <pre>apt-get install -y certbot python3-certbot-nginx
+certbot --nginx -d example.com</pre>
+    </section>
+    <section>
+      <h2>7. Установка через GitHub Pages</h2>
+      <p>Если публикуете архив на GitHub Pages, используйте:</p>
+      <pre>export PAGES_URL=https://example.github.io/ucheba
+export ARCHIVE_NAME=ucheba.tar.gz
+
+curl -fsSL https://example.github.io/ucheba/install_from_pages.sh | bash</pre>
+    </section>
+  </main>
+</body>
+</html>
