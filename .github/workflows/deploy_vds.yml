@@ -22,6 +22,7 @@ jobs:
           host: ${{ secrets.VDS_HOST }}
           username: ${{ secrets.VDS_USER }}
           key: ${{ secrets.VDS_SSH_KEY }}
+          passphrase: ${{ secrets.VDS_SSH_PASSPHRASE }}
           port: ${{ secrets.VDS_PORT || 22 }}
           script: |
             set -euo pipefail
