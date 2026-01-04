@@ -23,6 +23,19 @@ tar -czf ucheba.tar.gz --exclude='.git' .
 
 Достаточно включить GitHub Pages в настройках репозитория и выбрать источник `GitHub Actions`.
 
+### Деплой на VDS через GitHub Actions
+
+Добавлен workflow `.github/workflows/deploy_vds.yml`, который подключается к серверу по SSH и запускает
+`scripts/install_vds.sh` с параметрами из GitHub Secrets.
+
+Необходимые Secrets:
+
+- `VDS_HOST`, `VDS_USER`, `VDS_SSH_KEY`, `VDS_PORT`
+- `REPO_URL`, `DOMAIN`, `DJANGO_SECRET_KEY`, `DATABASE_URL`, `REDIS_URL`, `API_URL`
+- `BOT_TOKEN` (опционально)
+- `CREATE_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`
+- `PROJECT_DIR` (опционально, по умолчанию `/opt/ucheba`)
+
 ## 2. Запуск установки на сервере
 
 ```bash

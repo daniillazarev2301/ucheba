@@ -31,14 +31,20 @@ PY
 fi
 
 if [[ $EUID -ne 0 ]]; then
-  echo "Run as root (sudo)."
-  exit 1
+  if command -v sudo >/dev/null 2>&1; then
+    SUDO="sudo"
+  else
+    echo "Run as root (sudo)."
+    exit 1
+  fi
+else
+  SUDO=""
 fi
 
 export DEBIAN_FRONTEND=noninteractive
 
-apt-get update
-apt-get install -y python3 python3-venv python3-pip git nginx redis-server postgresql postgresql-contrib nodejs npm
+${SUDO} apt-get update
+${SUDO} apt-get install -y python3 python3-venv python3-pip git nginx redis-server postgresql postgresql-contrib nodejs npm
 
 if [[ ! -d "$PROJECT_DIR" ]]; then
   git clone "$REPO_URL" "$PROJECT_DIR"
@@ -46,10 +52,10 @@ fi
 
 cd "$PROJECT_DIR"
 
-chown -R www-data:www-data "$PROJECT_DIR"
+${SUDO} chown -R www-data:www-data "$PROJECT_DIR"
 
 if [[ "$CREATE_DB" == "1" ]]; then
-  sudo -u postgres psql <<SQL
+  ${SUDO} -u postgres psql <<SQL
 DO
 $$
 BEGIN
@@ -111,23 +117,23 @@ ENV
 fi
 
 # Systemd services
-install -m 644 "$PROJECT_DIR/scripts/systemd/ucheba-gunicorn.service" /etc/systemd/system/ucheba-gunicorn.service
-install -m 644 "$PROJECT_DIR/scripts/systemd/ucheba-celery.service" /etc/systemd/system/ucheba-celery.service
+${SUDO} install -m 644 "$PROJECT_DIR/scripts/systemd/ucheba-gunicorn.service" /etc/systemd/system/ucheba-gunicorn.service
+${SUDO} install -m 644 "$PROJECT_DIR/scripts/systemd/ucheba-celery.service" /etc/systemd/system/ucheba-celery.service
 
 if [[ -n "$BOT_TOKEN" ]]; then
-  install -m 644 "$PROJECT_DIR/scripts/systemd/ucheba-bot.service" /etc/systemd/system/ucheba-bot.service
+  ${SUDO} install -m 644 "$PROJECT_DIR/scripts/systemd/ucheba-bot.service" /etc/systemd/system/ucheba-bot.service
 fi
 
-systemctl daemon-reload
-systemctl enable --now ucheba-gunicorn.service
-systemctl enable --now ucheba-celery.service
+${SUDO} systemctl daemon-reload
+${SUDO} systemctl enable --now ucheba-gunicorn.service
+${SUDO} systemctl enable --now ucheba-celery.service
 if [[ -n "$BOT_TOKEN" ]]; then
-  systemctl enable --now ucheba-bot.service
+  ${SUDO} systemctl enable --now ucheba-bot.service
 fi
 
 # Nginx
-install -m 644 "$PROJECT_DIR/scripts/nginx/ucheba.conf" /etc/nginx/sites-available/ucheba.conf
-ln -sf /etc/nginx/sites-available/ucheba.conf /etc/nginx/sites-enabled/ucheba.conf
-nginx -t && systemctl reload nginx
+${SUDO} install -m 644 "$PROJECT_DIR/scripts/nginx/ucheba.conf" /etc/nginx/sites-available/ucheba.conf
+${SUDO} ln -sf /etc/nginx/sites-available/ucheba.conf /etc/nginx/sites-enabled/ucheba.conf
+${SUDO} nginx -t && ${SUDO} systemctl reload nginx
 
 echo "Done. Configure SSL with certbot if needed."
