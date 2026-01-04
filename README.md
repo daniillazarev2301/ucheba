@@ -29,6 +29,11 @@ python manage.py createsuperuser
 python manage.py runserver 0.0.0.0:8000
 ```
 
+## Автоустановщик для VDS
+
+Скрипт `scripts/install_vds.sh` автоматизирует установку на Ubuntu (Gunicorn, Celery, Nginx, Redis, PostgreSQL, Node.js).
+Подробности: `docs/INSTALL_VDS.md`.
+
 ### Celery
 
 ```bash

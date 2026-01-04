@@ -1,0 +1,14 @@
+[Unit]
+Description=Ucheba Celery Worker
+After=network.target redis-server.service
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/ucheba/backend
+EnvironmentFile=/opt/ucheba/backend/.env
+ExecStart=/opt/ucheba/backend/.venv/bin/celery -A config worker -l info
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,14 @@
+[Unit]
+Description=Ucheba Telegram Bot
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/ucheba/bot
+EnvironmentFile=/opt/ucheba/bot/.env
+ExecStart=/opt/ucheba/bot/.venv/bin/python /opt/ucheba/bot/bot.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
