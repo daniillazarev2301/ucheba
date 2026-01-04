@@ -29,15 +29,21 @@ python manage.py createsuperuser
 python manage.py runserver 0.0.0.0:8000
 ```
 
-## Автоустановщик для VDS
+## Автоустановщик для VDS (полная инструкция)
 
 Скрипт `scripts/install_vds.sh` автоматизирует установку на Ubuntu (Gunicorn, Celery, Nginx, Redis, PostgreSQL, Node.js).
-Подробности: `docs/INSTALL_VDS.md`.
 
-Краткая инструкция:
+### 1. Подготовка VDS
 
 ```bash
 sudo -i
+apt-get update
+apt-get install -y git curl
+```
+
+### 2. Настройка переменных окружения
+
+```bash
 export PROJECT_DIR=/opt/ucheba
 export REPO_URL=https://example.com/your-repo.git
 export DOMAIN=example.com
@@ -46,9 +52,53 @@ export DATABASE_URL=postgres://ucheba:ucheba@localhost:5432/ucheba
 export REDIS_URL=redis://localhost:6379/0
 export API_URL=http://127.0.0.1:8000/api
 export BOT_TOKEN=your-telegram-token
+```
 
+### 3. Запуск автоустановщика
+
+```bash
+cd /opt
+git clone "$REPO_URL" "$PROJECT_DIR"
+cd "$PROJECT_DIR"
 bash scripts/install_vds.sh
 ```
+
+### 4. Создание базы и пользователя PostgreSQL
+
+```bash
+sudo -u postgres psql <<SQL
+CREATE USER ucheba WITH PASSWORD 'ucheba';
+CREATE DATABASE ucheba OWNER ucheba;
+GRANT ALL PRIVILEGES ON DATABASE ucheba TO ucheba;
+SQL
+```
+
+> Если вы используете другие значения в `DATABASE_URL`, измените их здесь и в переменной окружения.
+
+### 5. Проверка сервисов
+
+```bash
+systemctl status ucheba-gunicorn
+systemctl status ucheba-celery
+systemctl status ucheba-bot
+```
+
+### 6. SSL (по желанию)
+
+```bash
+apt-get install -y certbot python3-certbot-nginx
+certbot --nginx -d example.com
+```
+
+### 7. Где смотреть логирование
+
+```bash
+journalctl -u ucheba-gunicorn -f
+journalctl -u ucheba-celery -f
+journalctl -u ucheba-bot -f
+```
+
+Дополнительно: расширенная документация — `docs/INSTALL_VDS.md`.
 
 ### Celery
 
