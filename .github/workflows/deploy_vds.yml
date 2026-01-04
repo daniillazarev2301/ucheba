@@ -26,18 +26,18 @@ jobs:
           port: ${{ secrets.VDS_PORT || 22 }}
           script: |
             set -euo pipefail
-            export PROJECT_DIR=${{ secrets.PROJECT_DIR || '/opt/ucheba' }}
-            export REPO_URL=${{ secrets.REPO_URL }}
-            export DOMAIN=${{ secrets.DOMAIN }}
-            export DJANGO_SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }}
-            export DATABASE_URL=${{ secrets.DATABASE_URL || '' }}
-            export REDIS_URL=${{ secrets.REDIS_URL }}
-            export API_URL=${{ secrets.API_URL }}
-            export BOT_TOKEN=${{ secrets.BOT_TOKEN }}
-            export CREATE_DB=${{ secrets.CREATE_DB || '1' }}
-            export POSTGRES_USER=${{ secrets.POSTGRES_USER || 'ucheba' }}
-            export POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD || 'ucheba' }}
-            export POSTGRES_DB=${{ secrets.POSTGRES_DB || 'ucheba' }}
+            export PROJECT_DIR="${{ secrets.PROJECT_DIR || '/opt/ucheba' }}"
+            export REPO_URL="${{ secrets.REPO_URL }}"
+            export DOMAIN="${{ secrets.DOMAIN }}"
+            export DJANGO_SECRET_KEY="${{ secrets.DJANGO_SECRET_KEY }}"
+            export DATABASE_URL="${{ secrets.DATABASE_URL || '' }}"
+            export REDIS_URL="${{ secrets.REDIS_URL }}"
+            export API_URL="${{ secrets.API_URL }}"
+            export BOT_TOKEN="${{ secrets.BOT_TOKEN }}"
+            export CREATE_DB="${{ secrets.CREATE_DB || '1' }}"
+            export POSTGRES_USER="${{ secrets.POSTGRES_USER || 'ucheba' }}"
+            export POSTGRES_PASSWORD="${{ secrets.POSTGRES_PASSWORD || 'ucheba' }}"
+            export POSTGRES_DB="${{ secrets.POSTGRES_DB || 'ucheba' }}"
             if [[ -z "$DATABASE_URL" && "${CREATE_DB:-1}" == "1" ]]; then
               export DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${POSTGRES_DB}"
             fi
