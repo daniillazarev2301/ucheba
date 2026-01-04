@@ -32,6 +32,14 @@ fi
 
 export DEBIAN_FRONTEND=noninteractive
 
+run_psql() {
+  if command -v sudo >/dev/null 2>&1; then
+    sudo -u postgres psql
+  else
+    su - postgres -c "psql"
+  fi
+}
+
 install_nodejs() {
   local version
   if command -v node >/dev/null 2>&1; then
@@ -65,7 +73,7 @@ fi
 cd "$PROJECT_DIR"
 
 if [[ "$CREATE_DB" == "1" ]]; then
-  ${SUDO} -u postgres psql <<SQL
+  run_psql <<SQL
 DO
 $$
 BEGIN
