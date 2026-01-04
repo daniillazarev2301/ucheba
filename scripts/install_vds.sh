@@ -14,6 +14,22 @@ POSTGRES_USER=${POSTGRES_USER:-ucheba}
 POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-ucheba}
 POSTGRES_DB=${POSTGRES_DB:-ucheba}
 
+if [[ "$CREATE_DB" == "1" ]]; then
+  DB_PASSWORD=$(python3 - <<'PY'
+from urllib.parse import urlparse
+import os
+
+database_url = os.environ.get("DATABASE_URL", "")
+parsed = urlparse(database_url)
+print(parsed.password or "")
+PY
+)
+  if [[ -n "$DB_PASSWORD" && "$DB_PASSWORD" != "$POSTGRES_PASSWORD" ]]; then
+    echo "WARNING: DATABASE_URL password differs from POSTGRES_PASSWORD. Using POSTGRES_* values."
+    DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${POSTGRES_DB}"
+  fi
+fi
+
 if [[ $EUID -ne 0 ]]; then
   echo "Run as root (sudo)."
   exit 1

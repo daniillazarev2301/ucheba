@@ -30,6 +30,8 @@ apt-get install -y git curl</pre>
     <section>
       <h2>2. Введите параметры установки</h2>
       <p>Сайт формирует готовую команду установки. Данные никуда не отправляются — генерация локальная в браузере.</p>
+      <p><strong>Важно:</strong> если <code>CREATE_DB=1</code>, установщик создаёт пользователя/БД и приведёт
+        <code>DATABASE_URL</code> к значениям <code>POSTGRES_*</code>, если они различаются.</p>
       <form id="installForm">
         <div class="grid">
           <label>PROJECT_DIR<br /><input name="projectDir" value="/opt/ucheba" /></label>
