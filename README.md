@@ -100,6 +100,11 @@ journalctl -u ucheba-bot -f
 
 Дополнительно: расширенная документация — `docs/INSTALL_VDS.md`.
 
+## Автоустановка через GitHub Pages
+
+Если нужен запуск одной командой (curl | bash), опубликуйте архив проекта и скрипт
+`scripts/install_from_pages.sh` на GitHub Pages. Полная инструкция: `docs/INSTALL_GITHUB_PAGES.md`.
+
 ### Celery
 
 ```bash

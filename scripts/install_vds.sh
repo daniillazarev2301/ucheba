@@ -9,6 +9,10 @@ DATABASE_URL=${DATABASE_URL:-postgres://ucheba:ucheba@localhost:5432/ucheba}
 REDIS_URL=${REDIS_URL:-redis://localhost:6379/0}
 API_URL=${API_URL:-http://127.0.0.1:8000/api}
 BOT_TOKEN=${BOT_TOKEN:-}
+CREATE_DB=${CREATE_DB:-1}
+POSTGRES_USER=${POSTGRES_USER:-ucheba}
+POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-ucheba}
+POSTGRES_DB=${POSTGRES_DB:-ucheba}
 
 if [[ $EUID -ne 0 ]]; then
   echo "Run as root (sudo)."
@@ -27,6 +31,27 @@ fi
 cd "$PROJECT_DIR"
 
 chown -R www-data:www-data "$PROJECT_DIR"
+
+if [[ "$CREATE_DB" == "1" ]]; then
+  sudo -u postgres psql <<SQL
+DO
+$$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_roles WHERE rolname = '${POSTGRES_USER}') THEN
+    CREATE ROLE ${POSTGRES_USER} LOGIN PASSWORD '${POSTGRES_PASSWORD}';
+  END IF;
+END
+$$;
+DO
+$$
+BEGIN
+  IF NOT EXISTS (SELECT 1 FROM pg_database WHERE datname = '${POSTGRES_DB}') THEN
+    CREATE DATABASE ${POSTGRES_DB} OWNER ${POSTGRES_USER};
+  END IF;
+END
+$$;
+SQL
+fi
 
 # Backend setup
 python3 -m venv "$PROJECT_DIR/backend/.venv"
