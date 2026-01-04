@@ -28,20 +28,26 @@ apt-get update
 apt-get install -y git curl</pre>
     </section>
     <section>
-      <h2>2. Переменные установки</h2>
-      <p>Задайте параметры перед запуском установщика.</p>
-      <pre>export PROJECT_DIR=/opt/ucheba
-export REPO_URL=https://example.com/your-repo.git
-export DOMAIN=example.com
-export DJANGO_SECRET_KEY=change-me
-export DATABASE_URL=postgres://ucheba:ucheba@localhost:5432/ucheba
-export REDIS_URL=redis://localhost:6379/0
-export API_URL=http://127.0.0.1:8000/api
-export BOT_TOKEN=your-telegram-token
-export CREATE_DB=1
-export POSTGRES_USER=ucheba
-export POSTGRES_PASSWORD=ucheba
-export POSTGRES_DB=ucheba</pre>
+      <h2>2. Введите параметры установки</h2>
+      <p>Сайт формирует готовую команду установки. Данные никуда не отправляются — генерация локальная в браузере.</p>
+      <form id="installForm">
+        <div class="grid">
+          <label>PROJECT_DIR<br /><input name="projectDir" value="/opt/ucheba" /></label>
+          <label>REPO_URL<br /><input name="repoUrl" value="https://example.com/your-repo.git" /></label>
+          <label>DOMAIN<br /><input name="domain" value="example.com" /></label>
+          <label>DJANGO_SECRET_KEY<br /><input name="secretKey" value="change-me" /></label>
+          <label>DATABASE_URL<br /><input name="databaseUrl" value="postgres://ucheba:ucheba@localhost:5432/ucheba" /></label>
+          <label>REDIS_URL<br /><input name="redisUrl" value="redis://localhost:6379/0" /></label>
+          <label>API_URL<br /><input name="apiUrl" value="http://127.0.0.1:8000/api" /></label>
+          <label>BOT_TOKEN (опционально)<br /><input name="botToken" value="your-telegram-token" /></label>
+          <label>CREATE_DB<br /><input name="createDb" value="1" /></label>
+          <label>POSTGRES_USER<br /><input name="pgUser" value="ucheba" /></label>
+          <label>POSTGRES_PASSWORD<br /><input name="pgPassword" value="ucheba" /></label>
+          <label>POSTGRES_DB<br /><input name="pgDb" value="ucheba" /></label>
+        </div>
+        <p><button type="button" id="generateBtn">Сгенерировать команду</button></p>
+      </form>
+      <pre id="generatedCommand">Нажмите «Сгенерировать команду»</pre>
     </section>
     <section>
       <h2>3. Запуск установки</h2>
@@ -75,18 +81,23 @@ bash scripts/install_vds.sh</pre>
       </div>
     </section>
     <section>
-      <h2>5. Проверка сервисов</h2>
+      <h2>5. Как происходит соединение с сервером</h2>
+      <p>Подключение выполняется по SSH. Вы подключаетесь к VDS и запускаете сгенерированные команды.
+        Автоустановщик не выполняет удалённых запросов сам — соединение инициирует администратор с вашей машины.</p>
+    </section>
+    <section>
+      <h2>6. Проверка сервисов</h2>
       <pre>systemctl status ucheba-gunicorn
 systemctl status ucheba-celery
 systemctl status ucheba-bot</pre>
     </section>
     <section>
-      <h2>6. SSL (по желанию)</h2>
+      <h2>7. SSL (по желанию)</h2>
       <pre>apt-get install -y certbot python3-certbot-nginx
 certbot --nginx -d example.com</pre>
     </section>
     <section>
-      <h2>7. Установка через GitHub Pages</h2>
+      <h2>8. Установка через GitHub Pages</h2>
       <p>Если публикуете архив на GitHub Pages, используйте:</p>
       <pre>export PAGES_URL=https://example.github.io/ucheba
 export ARCHIVE_NAME=ucheba.tar.gz
@@ -94,5 +105,35 @@ export ARCHIVE_NAME=ucheba.tar.gz
 curl -fsSL https://example.github.io/ucheba/install_from_pages.sh | bash</pre>
     </section>
   </main>
+  <script>
+    const form = document.getElementById("installForm");
+    const output = document.getElementById("generatedCommand");
+    const button = document.getElementById("generateBtn");
+
+    button.addEventListener("click", () => {
+      const data = new FormData(form);
+      const command = [
+        "sudo -i",
+        `export PROJECT_DIR=${data.get("projectDir")}`,
+        `export REPO_URL=${data.get("repoUrl")}`,
+        `export DOMAIN=${data.get("domain")}`,
+        `export DJANGO_SECRET_KEY=${data.get("secretKey")}`,
+        `export DATABASE_URL=${data.get("databaseUrl")}`,
+        `export REDIS_URL=${data.get("redisUrl")}`,
+        `export API_URL=${data.get("apiUrl")}`,
+        `export BOT_TOKEN=${data.get("botToken")}`,
+        `export CREATE_DB=${data.get("createDb")}`,
+        `export POSTGRES_USER=${data.get("pgUser")}`,
+        `export POSTGRES_PASSWORD=${data.get("pgPassword")}`,
+        `export POSTGRES_DB=${data.get("pgDb")}`,
+        "cd /opt",
+        "rm -rf /opt/ucheba",
+        "git clone \"$REPO_URL\" \"$PROJECT_DIR\"",
+        "cd \"$PROJECT_DIR\"",
+        "bash scripts/install_vds.sh",
+      ].join("\n");
+      output.textContent = command;
+    });
+  </script>
 </body>
 </html>
