@@ -1,0 +1,14 @@
+[Unit]
+Description=Ucheba Gunicorn Service
+After=network.target
+
+[Service]
+User=www-data
+Group=www-data
+WorkingDirectory=/opt/ucheba/backend
+EnvironmentFile=/opt/ucheba/backend/.env
+ExecStart=/opt/ucheba/backend/.venv/bin/gunicorn config.wsgi:application --bind 0.0.0.0:8000 --workers 3
+Restart=always
+
+[Install]
+WantedBy=multi-user.target
