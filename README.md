@@ -34,6 +34,22 @@ python manage.py runserver 0.0.0.0:8000
 Скрипт `scripts/install_vds.sh` автоматизирует установку на Ubuntu (Gunicorn, Celery, Nginx, Redis, PostgreSQL, Node.js).
 Подробности: `docs/INSTALL_VDS.md`.
 
+Краткая инструкция:
+
+```bash
+sudo -i
+export PROJECT_DIR=/opt/ucheba
+export REPO_URL=https://example.com/your-repo.git
+export DOMAIN=example.com
+export DJANGO_SECRET_KEY=change-me
+export DATABASE_URL=postgres://ucheba:ucheba@localhost:5432/ucheba
+export REDIS_URL=redis://localhost:6379/0
+export API_URL=http://127.0.0.1:8000/api
+export BOT_TOKEN=your-telegram-token
+
+bash scripts/install_vds.sh
+```
+
 ### Celery
 
 ```bash
