@@ -13,6 +13,7 @@ CREATE_DB=${CREATE_DB:-1}
 POSTGRES_USER=${POSTGRES_USER:-ucheba}
 POSTGRES_PASSWORD=${POSTGRES_PASSWORD:-ucheba}
 POSTGRES_DB=${POSTGRES_DB:-ucheba}
+INSTALL_USER=${INSTALL_USER:-${USER}}
 
 if [[ "$CREATE_DB" == "1" ]]; then
   DB_PASSWORD=$(python3 - <<'PY'
@@ -43,16 +44,37 @@ fi
 
 export DEBIAN_FRONTEND=noninteractive
 
+install_nodejs() {
+  local version
+  if command -v node >/dev/null 2>&1; then
+    version=$(node -v | sed 's/^v//')
+  else
+    version="0"
+  fi
+  if [[ "${version%%.*}" -lt 18 ]]; then
+    ${SUDO} apt-get install -y ca-certificates curl gnupg
+    ${SUDO} mkdir -p /etc/apt/keyrings
+    curl -fsSL https://deb.nodesource.com/gpgkey/nodesource-repo.gpg.key | ${SUDO} gpg --dearmor -o /etc/apt/keyrings/nodesource.gpg
+    echo "deb [signed-by=/etc/apt/keyrings/nodesource.gpg] https://deb.nodesource.com/node_18.x nodistro main" | ${SUDO} tee /etc/apt/sources.list.d/nodesource.list > /dev/null
+    ${SUDO} apt-get update
+    ${SUDO} apt-get install -y nodejs
+  fi
+}
+
 ${SUDO} apt-get update
-${SUDO} apt-get install -y python3 python3-venv python3-pip git nginx redis-server postgresql postgresql-contrib nodejs npm
+${SUDO} apt-get install -y python3 python3-venv python3-pip git nginx redis-server postgresql postgresql-contrib
+install_nodejs
+
+${SUDO} systemctl enable --now postgresql
+${SUDO} systemctl enable --now redis-server
 
 if [[ ! -d "$PROJECT_DIR" ]]; then
+  ${SUDO} mkdir -p "$(dirname "$PROJECT_DIR")"
+  ${SUDO} chown -R "${INSTALL_USER}:${INSTALL_USER}" "$(dirname "$PROJECT_DIR")"
   git clone "$REPO_URL" "$PROJECT_DIR"
 fi
 
 cd "$PROJECT_DIR"
-
-${SUDO} chown -R www-data:www-data "$PROJECT_DIR"
 
 if [[ "$CREATE_DB" == "1" ]]; then
   ${SUDO} -u postgres psql <<SQL
@@ -135,5 +157,7 @@ fi
 ${SUDO} install -m 644 "$PROJECT_DIR/scripts/nginx/ucheba.conf" /etc/nginx/sites-available/ucheba.conf
 ${SUDO} ln -sf /etc/nginx/sites-available/ucheba.conf /etc/nginx/sites-enabled/ucheba.conf
 ${SUDO} nginx -t && ${SUDO} systemctl reload nginx
+
+${SUDO} chown -R www-data:www-data "$PROJECT_DIR"
 
 echo "Done. Configure SSL with certbot if needed."

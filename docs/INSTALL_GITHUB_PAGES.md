@@ -35,6 +35,7 @@ tar -czf ucheba.tar.gz --exclude='.git' .
 - `BOT_TOKEN` (опционально)
 - `CREATE_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`
 - `PROJECT_DIR` (опционально, по умолчанию `/opt/ucheba`)
+- `INSTALL_USER` (опционально, по умолчанию пользователь SSH)
 
 ## 2. Запуск установки на сервере
 
