@@ -74,15 +74,13 @@ python3 -m venv "$PROJECT_DIR/backend/.venv"
 "$PROJECT_DIR/backend/.venv/bin/pip" install --upgrade pip
 "$PROJECT_DIR/backend/.venv/bin/pip" install -r "$PROJECT_DIR/backend/requirements.txt"
 
-if [[ ! -f "$PROJECT_DIR/backend/.env" ]]; then
-  cat > "$PROJECT_DIR/backend/.env" <<ENV
+cat > "$PROJECT_DIR/backend/.env" <<ENV
 DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY}
 DJANGO_DEBUG=0
 DJANGO_ALLOWED_HOSTS=${DOMAIN}
 DATABASE_URL=${DATABASE_URL}
 REDIS_URL=${REDIS_URL}
 ENV
-fi
 
 "$PROJECT_DIR/backend/.venv/bin/python" "$PROJECT_DIR/backend/manage.py" migrate
 "$PROJECT_DIR/backend/.venv/bin/python" "$PROJECT_DIR/backend/manage.py" collectstatic --noinput

@@ -13,6 +13,16 @@ tar -czf ucheba.tar.gz --exclude='.git' .
 Загрузите `ucheba.tar.gz` и файл `scripts/install_from_pages.sh` (переименуйте в `install_from_pages.sh`)
 в ветку `gh-pages` или в папку `docs/` (если GitHub Pages настроен на ветку `main` + `/docs`).
 
+### Вариант через GitHub Actions
+
+В репозитории есть workflow `.github/workflows/pages.yml`, который публикует:
+
+- `docs/install-site/index.html` как сайт установки
+- `install_from_pages.sh` в корне Pages
+- `ucheba.tar.gz` (архив репозитория)
+
+Достаточно включить GitHub Pages в настройках репозитория и выбрать источник `GitHub Actions`.
+
 ## 2. Запуск установки на сервере
 
 ```bash
