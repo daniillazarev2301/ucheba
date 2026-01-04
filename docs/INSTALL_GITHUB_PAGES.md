@@ -31,9 +31,11 @@ tar -czf ucheba.tar.gz --exclude='.git' .
 Необходимые Secrets:
 
 - `VDS_HOST`, `VDS_USER`, `VDS_SSH_KEY`, `VDS_PORT`
-- `REPO_URL`, `DOMAIN`, `DJANGO_SECRET_KEY`, `DATABASE_URL`, `REDIS_URL`, `API_URL`
+- `REPO_URL`, `DOMAIN`, `DJANGO_SECRET_KEY`, `REDIS_URL`, `API_URL`
 - `BOT_TOKEN` (опционально)
 - `CREATE_DB`, `POSTGRES_USER`, `POSTGRES_PASSWORD`, `POSTGRES_DB`
+
+`DATABASE_URL` необязателен, если `CREATE_DB=1` — он будет собран автоматически из `POSTGRES_*`.
 - `PROJECT_DIR` (опционально, по умолчанию `/opt/ucheba`)
 - `INSTALL_USER` (опционально, по умолчанию пользователь SSH)
 

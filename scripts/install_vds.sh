@@ -5,7 +5,7 @@ PROJECT_DIR=${PROJECT_DIR:-/opt/ucheba}
 REPO_URL=${REPO_URL:-https://example.com/your-repo.git}
 DOMAIN=${DOMAIN:-example.com}
 DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-change-me}
-DATABASE_URL=${DATABASE_URL:-postgres://ucheba:ucheba@localhost:5432/ucheba}
+DATABASE_URL=${DATABASE_URL:-}
 REDIS_URL=${REDIS_URL:-redis://localhost:6379/0}
 API_URL=${API_URL:-http://127.0.0.1:8000/api}
 BOT_TOKEN=${BOT_TOKEN:-}
@@ -16,19 +16,7 @@ POSTGRES_DB=${POSTGRES_DB:-ucheba}
 INSTALL_USER=${INSTALL_USER:-${USER}}
 
 if [[ "$CREATE_DB" == "1" ]]; then
-  DB_PASSWORD=$(python3 - <<'PY'
-from urllib.parse import urlparse
-import os
-
-database_url = os.environ.get("DATABASE_URL", "")
-parsed = urlparse(database_url)
-print(parsed.password or "")
-PY
-)
-  if [[ -n "$DB_PASSWORD" && "$DB_PASSWORD" != "$POSTGRES_PASSWORD" ]]; then
-    echo "WARNING: DATABASE_URL password differs from POSTGRES_PASSWORD. Using POSTGRES_* values."
-    DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${POSTGRES_DB}"
-  fi
+  DATABASE_URL="postgres://${POSTGRES_USER}:${POSTGRES_PASSWORD}@localhost:5432/${POSTGRES_DB}"
 fi
 
 if [[ $EUID -ne 0 ]]; then
